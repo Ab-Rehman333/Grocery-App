@@ -18,7 +18,7 @@ form.addEventListener("submit", addItem);
 // clear list
 clearBtn.addEventListener("click", clearItems);
 // // display items onload
-// window.addEventListener("DOMContentLoaded", setupItems);
+window.addEventListener("DOMContentLoaded", setupItems);
 
 // ****** functions **********
 function addItem(e) {
@@ -26,39 +26,17 @@ function addItem(e) {
     const userValue = grocery.value;
     const id = Date.now().toString();
     if (userValue && !editFlag) {
-        const articale = document.createElement("article");
-        const data_att = document.createAttribute("data-id");
-        data_att.value = id;
-        articale.setAttributeNode(data_att);
-        articale.classList.add("grocery-item");
-        articale.innerHTML = `
-    <p class="title">${userValue}</p>
-            <div class="btn-container">
-              <!-- edit btn -->
-              <button type="button" class="edit-btn">
-                <i class="fas fa-edit"></i>
-              </button>
-              <!-- delete btn -->
-              <button type="button" class="delete-btn">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-    `;
-        const deletBtn = articale.querySelector(".delete-btn");
-        const editBtn = articale.querySelector(".edit-btn");
-        deletBtn.addEventListener("click", deleteBtnFunc);
-        editBtn.addEventListener("click", editBtnFunc);
-        list.appendChild(articale);
+        creatListItems(id, userValue)
         displayAlert("sucessfully added", "alert-success");
         container.classList.add("show-container");
         // add to localStorage
-        addToLocatstrorage(id, userValue);
+        addToLocalStorage(id, userValue);
         // set back to default
         setBacktoDefault();
     } else if (userValue && editFlag) {
         editElement.innerHTML = userValue;
         displayAlert("sucessfully added", "alert-success")
-        editFromLocalStroge(editID , userValue)
+        editFromLocalStroge(editID, userValue)
         setBacktoDefault()
 
     } else {
@@ -85,12 +63,11 @@ function deleteBtnFunc(e) {
     }
     displayAlert("deleted sucessfully", "alert-danger");
     setBacktoDefault();
-    // removeFromLocalStorage(id)
+    removeFromLocalStorage(id)
 }
 // edit single items
 function editBtnFunc(e) {
     let editParent = e.currentTarget.parentElement.parentElement;
-    console.log(editParent)
     editElement = e.currentTarget.parentElement.previousElementSibling;
     grocery.value = editElement.innerHTML;
     editID = editParent.dataset.id;
@@ -114,18 +91,81 @@ function clearItems() {
 // set back to default
 function setBacktoDefault() {
     grocery.value = "";
-    submitBtn.textContent = "submit";
+    submitBtn.textContent = "Submit";
     editID = "";
     editFlag = false;
 }
 
 // add to localStorage
-function addToLocatstrorage(id, value) {
-    console.log("adding to localStorage");
+function addToLocalStorage(id, value) {
+    const grocery = { id, value }
+    let items = checkingLocal();
+    items.push(grocery)
+    localStorage.setItem("list", JSON.stringify(items))
 }
-// function removeFromLocalStorage(id){
 
-// }
-function editFromLocalStroge(id , value){
+function checkingLocal() {
+    return localStorage.getItem("list") ? JSON.parse(localStorage.getItem("list")) : [];
+}
+function removeFromLocalStorage(id) {
+    let items = checkingLocal();
+    items = items.filter(item => {
+        if (item.id !== id) {
+            return item
+        }
+    })
+    localStorage.setItem("list", JSON.stringify(items))
+}
+function editFromLocalStroge(id, value) {
+    let items = checkingLocal();
+    items.map(item => {
+        if (item.id === id) {
+            item.value = value;
+        }
+        return item
+    })
+    localStorage.setItem("list", JSON.stringify(items))
+
 
 }
+function setupItems() {
+    let items = checkingLocal();
+    if (items.length > 0) {
+        items.forEach(item => {
+            creatListItems(item.id, item.value)
+        })
+        container.classList.add("show-container")
+    }
+}
+function creatListItems(id, userValue) {
+    const articale = document.createElement("article");
+    const data_att = document.createAttribute("data-id");
+    data_att.value = id;
+    articale.setAttributeNode(data_att);
+    articale.classList.add("grocery-item");
+    articale.innerHTML = `
+<p class="title">${userValue}</p>
+        <div class="btn-container">
+          <!-- edit btn -->
+          <button type="button" class="edit-btn">
+            <i class="fas fa-edit"></i>
+          </button>
+          <!-- delete btn -->
+          <button type="button" class="delete-btn">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+`;
+    const deletBtn = articale.querySelector(".delete-btn");
+    const editBtn = articale.querySelector(".edit-btn");
+    deletBtn.addEventListener("click", deleteBtnFunc);
+    editBtn.addEventListener("click", editBtnFunc);
+    list.appendChild(articale);
+}
+
+
+// setItems
+// getItems
+// removeItems
+// save as string
+

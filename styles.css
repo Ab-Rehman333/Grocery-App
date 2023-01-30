@@ -3,7 +3,7 @@
 Fonts
 ===============
 */
-@import url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto:400,700&display=swap");
+/* @import url("https://fonts.googleapis.com/css?family=Open+Sans|Roboto:400,700&display=swap"); */
 
 /*
 =============== 
@@ -84,7 +84,7 @@ a {
     text-decoration: none;
 }
 
-img:not(.logo) {
+img:not(.logo){
     width: 100%;
 }
 
@@ -285,7 +285,9 @@ Grocery List
     cursor: pointer;
     content: var(--clr-primary-5);
     transition: var(--transition);
-    font-size: 0.85rem;
+    font-family: cursive;
+    font-size: 0.8em;
+    font-weight: bold;
 }
 
 .submit-btn:hover {
